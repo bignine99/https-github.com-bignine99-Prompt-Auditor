@@ -1,0 +1,5 @@
+{
+  "name": "Prompt Engineering Evaluator",
+  "description": "An expert evaluation tool for graduate-level prompt engineering assignments, grading based on structural, logical, and technical criteria.",
+  "requestFramePermissions": []
+}

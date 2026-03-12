@@ -1,0 +1,117 @@
+/* Modern Korean Font Stack: Pretendard */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  --color-brand: #09090b;
+  --color-brand-accent: #27272a;
+  --color-surface: #ffffff;
+  --color-background: #fafafa;
+  --color-border: #e4e4e7;
+  --color-accent: #3b82f6;
+}
+
+@layer base {
+  body {
+    @apply antialiased bg-[#fcfcfc] text-brand selection:bg-brand selection:text-white;
+    font-family: var(--font-sans);
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white border border-zinc-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.02),0_10px_20px_-5px_rgba(0,0,0,0.03)] rounded-2xl;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl bg-white border border-zinc-200 focus:outline-none focus:ring-4 focus:ring-brand/5 focus:border-brand transition-all duration-300 placeholder:text-zinc-400;
+  }
+  
+  .btn-primary {
+    @apply px-6 py-3 bg-brand text-white rounded-xl font-semibold hover:bg-zinc-800 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm;
+  }
+  
+  .btn-secondary {
+    @apply px-6 py-3 bg-white text-brand border border-zinc-200 rounded-xl font-semibold hover:bg-zinc-50 hover:border-zinc-300 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 shadow-sm;
+  }
+
+  .badge {
+    @apply px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border;
+  }
+
+  .bg-grid {
+    background-size: 40px 40px;
+    background-image: 
+      linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px);
+  }
+
+  .bg-glow {
+    background: radial-gradient(circle at 50% -20%, rgba(37, 99, 235, 0.05), transparent 70%);
+  }
+}
+
+/* 3D Rotating Cube Styles */
+@keyframes rotateCube3D { 
+  0% { transform: rotateX(0deg) rotateY(0deg); } 
+  100% { transform: rotateX(360deg) rotateY(360deg); } 
+}
+
+.nn-cube-wrapper { 
+  width: 48px; 
+  height: 48px; 
+  perspective: 600px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+}
+
+.nn-cube { 
+  width: 28px; 
+  height: 28px; 
+  position: relative; 
+  transform-style: preserve-3d; 
+  animation: rotateCube3D 15s infinite linear; 
+}
+
+.nn-cube div { 
+  position: absolute; 
+  width: 28px; 
+  height: 28px; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  font-family: sans-serif; 
+  font-weight: 700; 
+  font-size: 7px; 
+  color: white; 
+  border: 1px solid rgba(255, 255, 255, 0.4); 
+  background: linear-gradient(135deg, rgba(0, 150, 199, 0.3), rgba(0, 180, 216, 0.3), rgba(72, 202, 228, 0.3)); 
+  backdrop-filter: blur(5px); 
+}
+
+.nn-cube .front  { transform: translateZ(14px); }
+.nn-cube .back   { transform: rotateY(180deg) translateZ(14px); }
+.nn-cube .right  { transform: rotateY(90deg) translateZ(14px); }
+.nn-cube .left   { transform: rotateY(-90deg) translateZ(14px); }
+.nn-cube .top    { transform: rotateX(90deg) translateZ(14px); }
+.nn-cube .bottom { transform: rotateX(-90deg) translateZ(14px); }
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d4d4d8;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1aa;
+}
