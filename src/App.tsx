@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { motion, AnimatePresence } from 'motion/react';
 import { clsx, type ClassValue } from 'clsx';
@@ -20,7 +20,10 @@ import {
   Sparkles,
   ArrowRight,
   Check,
-  BarChart3
+  BarChart3,
+  Settings,
+  Key,
+  Save
 } from 'lucide-react';
 import { 
   Radar, 
@@ -41,7 +44,24 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [userApiKey, setUserApiKey] = useState('');
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [tempApiKey, setTempApiKey] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const savedKey = localStorage.getItem('gemini_api_key');
+    if (savedKey) {
+      setUserApiKey(savedKey);
+      setTempApiKey(savedKey);
+    }
+  }, []);
+
+  const saveApiKey = () => {
+    localStorage.setItem('gemini_api_key', tempApiKey);
+    setUserApiKey(tempApiKey);
+    setIsSettingsOpen(false);
+  };
 
   const cn = (...inputs: ClassValue[]) => {
     return twMerge(clsx(inputs));
@@ -121,7 +141,7 @@ export default function App() {
     }, 1200);
 
     try {
-      const evaluation = await evaluatePrompt(topic, promptText);
+      const evaluation = await evaluatePrompt(topic, promptText, userApiKey);
       if (evaluation) {
         setResult(evaluation);
       } else {
@@ -243,6 +263,13 @@ export default function App() {
             </div>
           </div>
           <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsSettingsOpen(true)}
+              className="p-2 text-zinc-400 hover:text-emerald-500 hover:bg-emerald-50 rounded-xl transition-all"
+              title="API 설정"
+            >
+              <Settings className="w-5 h-5" />
+            </button>
             <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-zinc-100 rounded-full border border-zinc-200">
               <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
               <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">System Online</span>
@@ -250,6 +277,78 @@ export default function App() {
           </div>
         </div>
       </nav>
+
+      {/* API Settings Modal */}
+      <AnimatePresence>
+        {isSettingsOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="w-full max-w-md bg-white border border-zinc-200 rounded-3xl shadow-2xl overflow-hidden"
+            >
+              <div className="p-6 border-b border-zinc-100 flex items-center justify-between bg-zinc-50/50">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center">
+                    <Key className="w-5 h-5 text-emerald-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-zinc-900">Gemini API 설정</h3>
+                    <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">Secure Local Storage</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setIsSettingsOpen(false)}
+                  className="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-lg transition-all"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="p-8 space-y-6">
+                <div className="space-y-3">
+                  <p className="text-sm text-zinc-500 leading-relaxed">
+                    프롬프트 평가를 위해 Gemini API 키가 필요합니다. 입력하신 키는 브라우저의 로컬 스토리지에만 안전하게 저장됩니다.
+                  </p>
+                </div>
+                <div className="space-y-2.5">
+                  <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">API Key</label>
+                  <div className="relative group">
+                    <input
+                      type="password"
+                      value={tempApiKey}
+                      onChange={(e) => setTempApiKey(e.target.value)}
+                      placeholder="AIzaSy..."
+                      className="w-full bg-zinc-50 border border-zinc-200 rounded-2xl px-5 py-4 text-zinc-900 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all font-mono text-sm"
+                    />
+                  </div>
+                </div>
+                <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-5 flex gap-4">
+                  <Info className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                  <p className="text-xs text-emerald-700/80 leading-relaxed font-medium">
+                    API 키가 없으시다면 <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-emerald-600 font-bold underline hover:text-emerald-500">Google AI Studio</a>에서 무료로 발급받으실 수 있습니다.
+                  </p>
+                </div>
+              </div>
+              <div className="p-6 bg-zinc-50/50 border-t border-zinc-100 flex justify-end gap-3">
+                <button
+                  onClick={() => setIsSettingsOpen(false)}
+                  className="px-5 py-2.5 text-sm font-bold text-zinc-400 hover:text-zinc-600 transition-colors"
+                >
+                  취소
+                </button>
+                <button
+                  onClick={saveApiKey}
+                  className="flex items-center gap-2 px-8 py-2.5 bg-zinc-900 hover:bg-black text-white font-bold rounded-2xl transition-all shadow-xl shadow-zinc-200"
+                >
+                  <Save className="w-4 h-4" />
+                  설정 저장
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-12 sm:py-20 relative z-10">
         <AnimatePresence mode="wait">

@@ -33,10 +33,12 @@ export interface EvaluationResult {
   };
 }
 
-export async function evaluatePrompt(topic: string, studentPrompt: string): Promise<EvaluationResult | null> {
-  const apiKey = process.env.GEMINI_API_KEY;
+export async function evaluatePrompt(topic: string, studentPrompt: string, userApiKey?: string): Promise<EvaluationResult | null> {
+  // 우선순위: 사용자가 직접 입력한 키 > Vite 환경 변수 > AI Studio 환경 변수
+  const apiKey = userApiKey || import.meta.env?.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+  
   if (!apiKey) {
-    throw new Error("GEMINI_API_KEY is not configured.");
+    throw new Error("API 키가 설정되지 않았습니다. 설정 아이콘을 눌러 API 키를 입력해주세요.");
   }
 
   const genAI = new GoogleGenAI({ apiKey });
